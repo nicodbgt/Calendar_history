@@ -31,6 +31,18 @@ export const actualizarEvento = async (id, evento) => {
   return data[0];
 };
 
+export const actualizarAsistencia = async (id, asistido) => {
+  const { data, error } = await supabase
+    .from('eventos_calendario')
+    .update({ asistido })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+};
+
 export const eliminarEvento = async (id) => {
   const { error } = await supabase
     .from('eventos_calendario')

@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { obtenerEventos, crearEvento, actualizarEvento, eliminarEvento } from './services/eventosService';
+import {
+  obtenerEventos,
+  crearEvento,
+  actualizarEvento,
+  actualizarAsistencia,
+  eliminarEvento,
+} from './services/eventosService';
 import ModalEvento from './components/ModalEvento';
 
 export default function App() {
@@ -63,11 +69,24 @@ export default function App() {
     setIsModalOpen(true);
   };
 
-  const cambiarAsistencia = (id) => {
+  const cambiarAsistencia = async (id) => {
+    const estadoAnterior = Boolean(eventosAsistidos[id]);
+    const nuevoEstado = !estadoAnterior;
+
     setEventosAsistidos((asistidos) => ({
       ...asistidos,
-      [id]: !asistidos[id],
+      [id]: nuevoEstado,
     }));
+
+    try {
+      await actualizarAsistencia(id, nuevoEstado);
+    } catch (error) {
+      setEventosAsistidos((asistidos) => ({
+        ...asistidos,
+        [id]: estadoAnterior,
+      }));
+      console.error('Error guardando asistencia:', error);
+    }
   };
 
   // Fecha con formato local
