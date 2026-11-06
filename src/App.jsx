@@ -13,6 +13,9 @@ export default function App() {
   const [eventosAsistidos, setEventosAsistidos] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventoEditando, setEventoEditando] = useState(null);
+  const [eventoEliminando, setEventoEliminando] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   // Cargar datos al montar
   useEffect(() => {
@@ -48,14 +51,19 @@ export default function App() {
     }
   };
 
-  const handleEliminar = async (id) => {
-    if(window.confirm('¿Eliminar este evento?')) {
-      try {
-        await eliminarEvento(id);
-        cargarDatos();
-      } catch (error) {
-        console.error("Error eliminando:", error);
-      }
+  const confirmarEliminacion = async () => {
+    if (!eventoEliminando || isDeleting) return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await eliminarEvento(eventoEliminando.id);
+      setEventoEliminando(null);
+      await cargarDatos();
+    } catch (error) {
+      console.error("Error eliminando:", error);
+      setDeleteError('No se pudo eliminar el trabajo. Intentá nuevamente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -107,9 +115,11 @@ export default function App() {
           <h1 className="page-title">
             calendario
           </h1>
-          <button onClick={abrirModalNuevo} className="add-button">
-            <span aria-hidden="true">+</span> Agregar
-          </button>
+          <div className="header-actions">
+            <button onClick={abrirModalNuevo} className="add-button">
+              <span aria-hidden="true">+</span> Agregar
+            </button>
+          </div>
         </div>
 
         {/* Tabla */}
@@ -146,7 +156,13 @@ export default function App() {
                     <button onClick={() => abrirModalEditar(evento)} className="edit-button">
                       editar
                     </button>
-                    <button onClick={() => handleEliminar(evento.id)} className="delete-button">
+                    <button
+                      onClick={() => {
+                        setDeleteError('');
+                        setEventoEliminando(evento);
+                      }}
+                      className="delete-button"
+                    >
                       eliminar
                     </button>
                   </td>
@@ -163,6 +179,64 @@ export default function App() {
         onSave={handleGuardar}
         eventoEditar={eventoEditando}
       />
+
+      {eventoEliminando && (
+        <div
+          className="modal-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !isDeleting) setEventoEliminando(null);
+          }}
+        >
+          <section
+            className="modal-card confirm-delete-card"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-description"
+          >
+            <div className="modal-heading">
+              <span className="modal-kicker">Confirmar acción</span>
+              <button
+                type="button"
+                onClick={() => setEventoEliminando(null)}
+                className="close-button"
+                aria-label="Cerrar confirmación"
+                disabled={isDeleting}
+              >
+                ×
+              </button>
+            </div>
+            <div className="confirm-delete-icon" aria-hidden="true">!</div>
+            <h2 className="modal-title" id="delete-dialog-title">¿Eliminar este trabajo?</h2>
+            <p className="confirm-delete-description" id="delete-dialog-description">
+              Esta acción no se puede deshacer. Se eliminará el trabajo de tu calendario.
+            </p>
+            <div className="confirm-delete-summary">
+              <strong>{eventoEliminando.cliente}</strong>
+              <span>{eventoEliminando.fecha} · {eventoEliminando.horario}</span>
+            </div>
+            {deleteError && <p className="confirm-delete-error" role="alert">{deleteError}</p>}
+            <div className="modal-actions confirm-delete-actions">
+              <button
+                type="button"
+                onClick={() => setEventoEliminando(null)}
+                className="cancel-button"
+                disabled={isDeleting}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmarEliminacion}
+                className="delete-button confirm-delete-button"
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Eliminando...' : 'Sí, eliminar'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

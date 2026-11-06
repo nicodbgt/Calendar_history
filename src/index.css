@@ -120,6 +120,12 @@
     color: #b7da8d;
   }
 
+  .header-actions {
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+  }
+
   .add-button span {
     margin-right: 5px;
     font-size: 17px;
@@ -251,6 +257,81 @@
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
   }
 
+  .confirm-delete-card {
+    width: min(100%, 440px);
+    border-color: #805956;
+  }
+
+  .confirm-delete-card .modal-kicker {
+    color: #dc9b94;
+  }
+
+  .confirm-delete-icon {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    margin-top: 28px;
+    place-items: center;
+    border: 1px solid #a56f6b;
+    border-radius: 50%;
+    color: #dc9b94;
+    font: 28px Georgia, 'Times New Roman', serif;
+  }
+
+  .confirm-delete-card .modal-title {
+    margin: 18px 0 10px;
+    font-size: 28px;
+    text-transform: none;
+  }
+
+  .confirm-delete-description {
+    margin: 0;
+    color: #aeb9ad;
+    font: 15px/1.6 Arial, sans-serif;
+  }
+
+  .confirm-delete-summary {
+    display: grid;
+    gap: 6px;
+    margin-top: 22px;
+    padding: 14px 16px;
+    border-left: 2px solid #a56f6b;
+    background: #101612;
+    color: #f0f2e9;
+    font: 14px/1.5 Arial, sans-serif;
+  }
+
+  .confirm-delete-summary span {
+    color: #aeb9ad;
+    font-size: 12px;
+  }
+
+  .confirm-delete-error {
+    margin: 16px 0 0;
+    color: #dc9b94;
+    font: 14px/1.5 Arial, sans-serif;
+  }
+
+  .confirm-delete-actions {
+    margin-top: 24px;
+  }
+
+  .confirm-delete-button {
+    background: #633b39;
+    color: #fff1ed;
+  }
+
+  .confirm-delete-button:hover:not(:disabled) {
+    border-color: #dc9b94;
+    background: #80514d;
+  }
+
+  .confirm-delete-actions button:disabled,
+  .confirm-delete-card .close-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+
   .modal-heading {
     display: flex;
     align-items: center;
@@ -354,7 +435,7 @@
       grid-row: 2;
     }
 
-    .add-button {
+    .header-actions {
       grid-row: 2;
     }
 
